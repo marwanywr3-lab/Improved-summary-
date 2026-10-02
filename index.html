@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="warm">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>مُلخّص الرؤى البصرية | Visual Concept Summarizer</title>
+  
+  <!-- خطوط عربية ولاتينية دافئة ومقروءة -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Tajawal:wght@400;500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- الأنماط المنسقة للموقع -->
+  <link rel="stylesheet" href="styles-base.css">
+  <link rel="stylesheet" href="styles-components.css">
+</head>
+<body class="app-body">
+  <!-- رأس الصفحة والتنقل -->
+  <header class="app-header">
+    <div class="header-container">
+      <div class="brand-zone">
+        <div class="brand-logo">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+            <path d="M6 6h10"/>
+            <path d="M6 10h10"/>
+            <path d="m9 16 2 2 4-4"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1 class="brand-title" data-i18n="app_title">مُلخّص الرؤى</h1>
+          <span class="brand-badge" data-i18n="app_badge">مُدعّم بالرسم التوضيحي</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- زر تبديل اللغة -->
+        <button id="langToggleBtn" class="btn-icon-label" title="Switch Language / تبديل اللغة">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="2" y1="12" x2="22" y2="12"/>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+          </svg>
+          <span id="currentLangLabel">EN</span>
+        </button>
+
+        <!-- زر إعدادات الـ API -->
+        <button id="openApiSettingsBtn" class="btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 2l-2 2m-1-1l-3 3m5 0l-3-3m-6 8a4 4 0 1 1-5.66-5.66l6.36-6.36a4.01 4.01 0 0 1 5.66 5.66L10 16z"/>
+            <circle cx="7.5" cy="16.5" r="1.5"/>
+          </svg>
+          <span data-i18n="btn_api_settings">مفاتيح API</span>
+          <span id="apiKeyStatusDot" class="status-dot dot-inactive"></span>
+        </button>
+
+        <!-- زر تفريغ المستند -->
+        <button id="resetSessionBtn" class="btn-ghost" data-i18n="btn_reset">جديد</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- شريط تنبيه حالة المفاتيح في حال عدم إدخالها -->
+  <div id="missingKeyBanner" class="system-banner hidden">
+    <div class="banner-content">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span data-i18n="missing_key_warning">يُرجى إدخال مفتاح الـ API الخاص بك لتتمكن من التلخيص وتوليد الصور التوضيحية.</span>
+      <button id="bannerSetupKeyBtn" class="banner-btn" data-i18n="btn_configure_now">إعداد المفاتيح الآن</button>
+    </div>
+  </div>
+
+  <!-- مساحة العمل الرئيسية ثلاثية الأعمدة -->
+  <main class="workspace-layout">
+    
+    <!-- العمود الأيمن: إدارة الملفات والمصدر الأصلي -->
+    <aside class="sidebar-panel" id="sourcePanel">
+      <div class="panel-header">
+        <h2 class="panel-title" data-i18n="panel_source_title">المستند والمصدر</h2>
+        <span id="sourceStats" class="panel-counter">0 صفحة / مقطع</span>
+      </div>
+
+      <!-- منطقة إسقاط الملفات -->
+      <div id="dropZone" class="file-dropzone">
+        <input type="file" id="fileInput" accept=".pdf,.txt,.md" class="file-hidden-input">
+        <div class="dropzone-inner">
+          <div class="dropzone-icon">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+              <line x1="12" y1="18" x2="12" y2="12"/>
+              <line x1="9" y1="15" x2="15" y2="15"/>
+            </svg>
+          </div>
+          <p class="dropzone-primary" data-i18n="dropzone_prompt">اسحب كتابك أو ملفك هنا</p>
+          <p class="dropzone-sub" data-i18n="dropzone_types">يدعم صيغ PDF، TXT، Markdown</p>
+          <button id="browseFileBtn" class="btn-outline-sm" data-i18n="dropzone_browse">أو استعرض من جهازك</button>
+        </div>
+      </div>
+
+      <!-- محدد نص يدوي بديل -->
+      <div class="text-fallback-block">
+        <details>
+          <summary data-i18n="fallback_paste_summary">أو الصق نصاً دراسياً مباشرة</summary>
+          <textarea id="rawTextPasteInput" placeholder="ألصق الفصل الدراسي أو المسائل والقوانين هنا..." rows="6"></textarea>
+          <button id="processPastedTextBtn" class="btn-primary-sm" data-i18n="btn_process_text">تحليل النص</button>
+        </details>
+      </div>
+
+      <!-- قائمة الفهارس والمفاهيم المستخرجة -->
+      <div class="concept-navigator">
+        <h3 class="sub-heading" data-i18n="concepts_found_heading">المفاهيم والقوانين المرصودة</h3>
+        <div id="conceptsListContainer" class="concepts-list">
+          <div class="empty-state-card" data-i18n="concepts_empty_hint">ارفع ملفاً ليبدأ النظام باستخراج القوانين والمفاهيم تلقائياً.</div>
+        </div>
+      </div>
+
+      <!-- إعدادات عمق التلخيص -->
+      <div class="summary-controls-card">
+        <label class="control-label" data-i18n="summary_depth_label">نمط التلخيص:</label>
+        <select id="summaryDepthSelect" class="form-select">
+          <option value="detailed" data-i18n="depth_detailed">شامل مع التركيز على القوانين والمفاهيم</option>
+          <option value="concise" data-i18n="depth_concise">موجز مركز (نقاط مراجعة سريعة)</option>
+          <option value="formulas_only" data-i18n="depth_formulas">استخلاص القوانين والمعادلات فقط</option>
+        </select>
+        <button id="startSummarizeBtn" class="btn-primary-block" disabled>
+          <span data-i18n="btn_generate_summary">توليد الملخص التفاعلي</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- العمود الأوسط: محرر الملخص الذكي والتفاعلي -->
+    <section class="main-editor-panel" id="editorPanel">
+      <div class="editor-toolbar">
+        <div class="toolbar-info">
+          <h2 id="activeDocTitle" class="doc-title" data-i18n="untitled_document">مستند بدون عنوان</h2>
+          <span id="readingTimeIndicator" class="reading-time">~ 0 دقيقة قراءة</span>
+        </div>
+        <div class="toolbar-tools">
+          <button id="printDocBtn" class="btn-icon" title="طباعة الملخص" data-i18n-title="tooltip_print">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="6 9 6 2 18 2 18 9"/>
+              <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+              <rect x="6" y="14" width="12" height="8"/>
+            </svg>
+          </button>
+          <button id="exportMarkdownBtn" class="btn-icon" title="تصدير كـ Markdown" data-i18n-title="tooltip_export_md">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- مساحة عرض وتعديل الملخص الحية -->
+      <div class="document-canvas-wrapper">
+        <div id="summaryCanvas" class="summary-canvas" contenteditable="true" spellcheck="false" data-placeholder="سيظهر الملخص التفاعلي هنا بعد التحليل... يمكنك أيضاً تحريره وإضافة رسوماتك التوضيحية بجانب أي قانون.">
+        </div>
+      </div>
+    </section>
+
+    <!-- العمود الأيسر: استوديو توليد الصور الـ 15 أسلوباً -->
+    <aside class="sidebar-panel" id="visualStudioPanel">
+      <div class="panel-header">
+        <h2 class="panel-title" data-i18n="visual_studio_title">استوديو المفاهيم البصرية</h2>
+        <span class="studio-status" id="generatorStatusBadge" data-i18n="studio_ready">جاهز</span>
+      </div>
+
+      <!-- المفهوم أو القانون المستهدف -->
+      <div class="selected-concept-box">
+        <label class="control-label" data-i18n="label_selected_concept">المفهوم / القانون المستهدف:</label>
+        <div id="targetConceptDisplay" class="concept-chip empty">
+          <span data-i18n="hint_select_text_or_concept">حدد نصاً في الملخص أو اختر مفهوماً من القائمة</span>
+        </div>
+        <input type="hidden" id="selectedConceptContextHidden">
+      </div>
+
+      <!-- توجيه إضافي من المستخدم (برومبت مخصص) -->
+      <div class="custom-prompt-box">
+        <label class="control-label" data-i18n="label_custom_instruction">تعليمات إضافية للصورة (اختياري):</label>
+        <textarea id="customInstructionInput" rows="2" placeholder="مثال: ركز على المتغير x باللون الأحمر ومسار الحركة بالأسهم"></textarea>
+      </div>
+
+      <!-- محدد الأساليب البصرية الـ 15 -->
+      <div class="visual-styles-wrapper">
+        <div class="styles-header">
+          <label class="control-label" data-i18n="label_choose_style">اختر الطابع البصري (15 نمطاً متاحاً):</label>
+          <span id="activeStyleCounter" class="style-tag">1 / 15</span>
+        </div>
+
+        <div class="styles-grid" id="stylesGrid">
+          <!-- النمط 1 -->
+          <div class="style-card selected" data-style-id="chalkboard">
+            <div class="style-icon-preview style-chalkboard"></div>
+            <div class="style-info">
+              <h4 class="style-name" data-i18n="style_chalkboard_name">سبورة أكاديمية</h4>
+              <p class="style-desc" data-i18n="style_chalkboard_desc">طابع طباشيري دافئ وتوضيحي</p>
+            </div>
+          </div>
+
+          <!-- النمط 2 -->
+          <div class="style-card" data-style-id="blueprint">
+            <div class="style-icon-preview style-blueprint"></div>
+            <div class="style-info">
+              <h4 class="style-name" data-i18n="style_blueprint_name">مخطط هندسي تقني</h4>
+              <p class="style-desc" data-i18n="style_blueprint_desc">شبكة قياسات دقيقة وخطوط واضحة</p>
+            </div>
+          </div>
+
+          <!-- النمط 3 -->
+          <div class="style-card" data-style-id="watercolor">
+            <div class="style-icon-preview style-watercolor"></div>
+            <div class="style-info">
+              <h4 class="style-name" data-i18n="style_watercolor_name">رسم مائي ناعم</h4>
+              <p class="style-desc" data-i18n="style_watercolor_desc">ألوان هادئة ونغمات باستيل عضوية</p>
+            </div>
+          </div>
+
+          <!-- النمط 4 -->
+          <div class="style-card" data-style-id="vintage_engraving">
+            <div class="style-icon-preview style-vintage"></div>
+            <div class="style-info">
+              <h4 class="style-name" data-i18n="style_vintage_name">حفر المراجع الكلاسيكية</h4>
+              <p class="style-desc" data-i18n="style_vintage_desc">طراز كتب وموسوعات القرن التاسع عشر</p>
+            </div>
+          </div>
+
+          <!-- النمط 5 -->
+          <div class="style-card" data-style-id="clay_isometric">
+            <div class="style-icon-preview style-clay"></div>
+            <div class="style-info">
+              <h4 class="style-name" data-i18n="style_clay_name">طين إيزومتري 3D</h4>
+              <p class="style-desc" data-i18n="style_clay_desc">مجسمات طينية لطيفة بزاية إيزومترية</p>
+            </div>
+          </div>
+
+          <!-- النمط 6 -->
+          <div class="style-card" data-style-id="flat_vector">
+            <div class="style-icon-preview style-vector"></div>
+            <div class="style-info">
+              <h4 class="style-name" data-i18n="style_vector_name">فيكتور حديث مبسّط</h4>
+              <p class="style-desc" data-i18n="style_vector_desc">أشكال نظيفة وألوان متوازنة ومتباينة</p>
+            </div>
+          </div>
+
+          <!-- النمط 7 -->
+          <div class="style-card" data-style-id="geometric_origami">
+            <div class="style-icon-preview style-origami"></div>
+            <div class="style-info">
+              <h4 class="style-name" data-i18n="style_origami_name">أوريغامي وهندسة ورقية</h4>
+              <p class="style-desc" data-i18n="style_origami_desc">أبعاد تجريدية بأسلوب ثني الورق</p>
+            </div>
+          </div>
+
+          <!-- النمط 8 -->
+          <div class="style-card" data-style-id="retro_manual">
+            <div class="style-icon-preview style-retromanual"></div>
+            <div class="style-info">
+              <h4 class="style-name" data-i18n="style_retromanual_name">كتيّب إرشادي ريترو</h4>
+              <p class="style-desc" data-i18n="style_retromanual_desc">مطبوعات علمية سبعينية وخطوط تظليل</p>
+            </div>
+          </div>
+
+          <!-- النمط 9 -->
+          <div class="style-card" data-style-id="schematic_mindmap">
+            <div class="style-icon-preview style-mindmap"></div>
+            <div class="style-info">
+              <h4 class="style-name" data-i18n="style_mindmap_name">شجرة وروابط ذهنية</h4>
+              <p class="style-desc" data-i18n="style_mindmap_desc">عقد مترابطة توضح تسلسل المفهوم</p>
+            </div>
+          </div>
+
+          <!-- النمط 10 -->
+          <div class="style-card" data-style-id="pixel_art">
+            <div class="style-icon-preview style-pixel"></div>
+            <div class="style-info">
+              <h4 class="style-name" data-i18n="style_pixel_name">بيكسل آرت تعليمي</h4>
+              <p class="style-desc" data-i18n="style_pixel_desc">طابع ألعاب كلاسيكي 16-بت جذاب</p>
+            </div>
+          </div>
+
+          <!-- النمط 11 -->
+          <div class="style-card" data-style-id="paper_cutout">
+            <div class="style-icon-preview style-papercut"></div>
+            <div class="style-info">
+              <h4 class="style-name" data-i18n="style_papercut_name">قصاصات ورقية متعددة الطبقات</h4>
+              <p class="style-desc" data-i18n="style_papercut_desc">ظلال حقيقية وعمق فني بارز</p>
+            </div>
+          </div>
+
+          <!-- النمط 12 -->
+          <div class="style-card" data-style-id="pastel_lineart">
+            <div class="style-icon-preview style-lineart"></div>
+            <div class="style-info">
+              <h4 class="style-name" data-i18n="style_lineart_name">رسم خطي وظلال باستيل</h4>
+              <p class="style-desc" data-i18n="style_lineart_desc">خطوط سائلة بلمسات تلوين دافئة</p>
+            </div>
+          </div>
+
+          <!-- النمط 13 -->
+          <div class="style-card" data-style-id="kawaii_educational">
+            <div class="style-icon-preview style-kawaii"></div>
+            <div class="style-info">
+              <h4 class="style-name" data-i18n="style_kawaii_name">تبسيط كرتوني ودود</h4>
+              <p class="style-desc" data-i18n="style_kawaii_desc">أشكال مرحة تشرح القوانين المعقدة</p>
+            </div>
+          </div>
+
+          <!-- النمط 14 -->
+          <div class="style-card" data-style-id="cinematic_macro">
+            <div class="style-icon-preview style-cinematic"></div>
+            <div class="style-info">
+              <h4 class="style-name" data-i18n="style_cinematic_name">مشهد سينمائي دافئ</h4>
+              <p class="style-desc" data-i18n="style_cinematic_desc">إضاءة حقيقية وعمق ميداني مركز</p>
+            </div>
+          </div>
+
+          <!-- النمط 15 -->
+          <div class="style-card" data-style-id="holographic_hud">
+            <div class="style-icon-preview style-hud"></div>
+            <div class="style-info">
+              <h4 class="style-name" data-i18n="style_hud_name">شاشة واجهة بيانات مستقبلية</h4>
+              <p class="style-desc" data-i18n="style_hud_desc">مخططات شفافة واضحة وعالية التفاصيل</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- زر إنشاء الرسم التوضيحي -->
+      <button id="generateVisualBtn" class="btn-primary-block" disabled>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+          <path d="M2 12h20"/>
+        </svg>
+        <span data-i18n="btn_render_visual">إنشاء الصورة التوضيحية</span>
+      </button>
+
+      <!-- معاينة النتيجة وزر الإدراج بالملخص -->
+      <div id="imagePreviewArea" class="preview-area empty">
+        <div class="preview-placeholder">
+          <p data-i18n="preview_empty_state">ستظهر الصورة التوضيحية الموَّلدة هنا فور اكتمالها.</p>
+        </div>
+        <div id="imageResultCard" class="image-result-card hidden">
+          <img id="renderedResultImg" src="" alt="المفهوم التوضيحي المولد">
+          <div class="image-result-actions">
+            <button id="insertIntoSummaryBtn" class="btn-accent-sm">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/>
+                <line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              <span data-i18n="btn_attach_to_summary">إدراج في الملخص بجانب المفهوم</span>
+            </button>
+            <a id="downloadImageBtn" class="btn-outline-sm" download="concept-diagram.png" target="_blank" data-i18n="btn_download_img">حفظ الصورة</a>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- زر الشات العائم في زاوية الموقع -->
+  <button id="chatFloatingToggleBtn" class="chat-floating-btn" title="المساعد الذكي للملخص">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+  </button>
+
+  <!-- نافذة الشات بوت العائمة المرتبطة بالـ API والملخص -->
+  <div id="chatFloatingBox" class="chat-box-widget hidden">
+    <div class="chat-widget-header">
+      <div class="chat-widget-title-zone">
+        <span class="chat-status-indicator"></span>
+        <h3 class="chat-widget-title">مساعد الملخص الذكي</h3>
+      </div>
+      <button id="closeChatWidgetBtn" class="btn-close-modal">&times;</button>
+    </div>
+    <div class="chat-widget-messages" id="chatWidgetMessages">
+      <div class="chat-msg chat-msg-bot">
+        مرحباً بك! أنا مساعدك التفاعلي مع هذا الكتاب. يمكنك سؤالي عن أي مفهوم في الملخص، أو كتابة أمر مثل: "ارسم لي صورة لقانون الجاذبية" وسأولدها لك فوراً.
+      </div>
+    </div>
+    <div class="chat-widget-input-zone">
+      <input type="text" id="chatWidgetInput" placeholder="اسأل عن الكتاب أو اطلب رسم مفهوم..." autocomplete="off">
+      <button id="chatWidgetSendBtn" class="btn-primary-sm">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- نافذة منبثقة لإعدادات المفاتيح (BYOK Modal) -->
+  <div id="apiKeyModal" class="modal-overlay hidden">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 class="modal-title" data-i18n="modal_api_title">إعدادات مفاتيح الربط (API Keys)</h3>
+        <button id="closeApiModalBtn" class="btn-close-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-intro" data-i18n="modal_api_intro">
+          تُحفظ مفاتيحك مشفرة محلياً في متصفحك فقط ولا يتم إرسالها إلى أي خادم وسيط. تُرسل الطلبات مباشرة من جهازك لمزود الخدمة.
+        </p>
+
+        <div class="form-group">
+          <label for="providerSelect" data-i18n="label_ai_provider">مزود خدمة الذكاء الاصطناعي الأساسي:</label>
+          <select id="providerSelect" class="form-select">
+            <option value="openai">OpenAI (GPT-4o & DALL-E 3)</option>
+            <option value="gemini">Google Gemini (Gemini 1.5 / 2.0 & Imagen)</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="openaiKeyGroup">
+          <label for="openAiKeyInput" data-i18n="label_openai_key">مفتاح OpenAI API Key:</label>
+          <div class="input-password-wrapper">
+            <input type="password" id="openAiKeyInput" placeholder="sk-..." autocomplete="off">
+            <button type="button" class="btn-toggle-eye" data-target="openAiKeyInput">👁</button>
+          </div>
+        </div>
+
+        <div class="form-group hidden" id="geminiKeyGroup">
+          <label for="geminiKeyInput" data-i18n="label_gemini_key">مفتاح Google Gemini API Key:</label>
+          <div class="input-password-wrapper">
+            <input type="password" id="geminiKeyInput" placeholder="AIzaSy..." autocomplete="off">
+            <button type="button" class="btn-toggle-eye" data-target="geminiKeyInput">👁</button>
+          </div>
+        </div>
+
+        <div class="modal-tips">
+          <span class="tip-badge" data-i18n="tip_badge">تنبيه أمان:</span>
+          <span data-i18n="tip_storage_notice">يمكنك مسح مفاتيحك في أي لحظة بضغطة زر واحدة.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button id="clearKeysBtn" class="btn-danger-outline" data-i18n="btn_delete_keys">مسح المفاتيح المخزنة</button>
+        <button id="saveKeysBtn" class="btn-primary" data-i18n="btn_save_keys">حفظ المفاتيح</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- مؤشر شاشة التحميل والتوليد -->
+  <div id="globalLoader" class="loading-overlay hidden">
+    <div class="loader-spinner"></div>
+    <p id="loaderMessage" class="loader-text">جاري معالجة الكتاب واستخراج القوانين...</p>
+  </div>
+
+  <!-- ملفات الجافاسكريبت بالترتيب الصحيح -->
+  <script src="i18n.js"></script>
+  <script src="storage-keys.js"></script>
+  <script src="document-parser.js"></script>
+  <script src="ai-summary-engine.js"></script>
+  <script src="visual-styles-engine.js"></script>
+  <script src="image-generator.js"></script>
+  <script src="editor-export.js"></script>
+  <script src="chatbot-engine.js"></script>
+</body>
+</html>
