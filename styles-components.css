@@ -1,0 +1,512 @@
+/* ==========================================================================
+   styles-components.css - تنسيقات المكونات واستوديو الأساليب البصرية
+   ========================================================================== */
+
+/* 1. منطقة سحب وإفلات الملفات */
+.file-dropzone {
+  border: 2px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  background-color: var(--bg-surface);
+  padding: var(--space-lg) var(--space-sm);
+  text-align: center;
+  transition: all var(--transition-base);
+  cursor: pointer;
+  position: relative;
+}
+
+.file-dropzone:hover,
+.file-dropzone.drag-active {
+  border-color: var(--accent-primary);
+  background-color: var(--accent-soft);
+}
+
+.file-hidden-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.dropzone-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs);
+  pointer-events: none;
+}
+
+.dropzone-icon {
+  color: var(--accent-primary);
+  margin-bottom: var(--space-2xs);
+}
+
+.dropzone-primary {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+.dropzone-sub {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.file-dropzone button {
+  pointer-events: auto;
+  margin-top: var(--space-2xs);
+}
+
+/* 2. مستكشف المفاهيم والقوانين */
+.text-fallback-block details {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-xs);
+  font-size: 0.82rem;
+}
+
+.text-fallback-block summary {
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-secondary);
+  padding: 4px;
+}
+
+.text-fallback-block textarea {
+  margin-top: var(--space-xs);
+  font-size: 0.8rem;
+}
+
+.concepts-list {
+  max-height: 230px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding-right: 2px;
+}
+
+[dir="ltr"] .concepts-list {
+  padding-right: 0;
+  padding-left: 2px;
+}
+
+.empty-state-card {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  text-align: center;
+  padding: var(--space-md) var(--space-xs);
+  background: var(--bg-surface);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--border-subtle);
+}
+
+.concept-item-card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.concept-item-card:hover {
+  border-color: var(--accent-primary);
+  background-color: var(--accent-soft);
+}
+
+.concept-item-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.concept-item-type {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+}
+
+/* 3. مساحة العمل والمحرر التفاعلي */
+.main-editor-panel {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  display: flex;
+  flex-direction: column;
+  min-height: 820px;
+  box-shadow: var(--shadow-warm-sm);
+  overflow: hidden;
+}
+
+.editor-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-sm) var(--space-md);
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.doc-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.reading-time {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.toolbar-tools {
+  display: flex;
+  gap: var(--space-xs);
+}
+
+.document-canvas-wrapper {
+  flex: 1;
+  padding: var(--space-xl);
+  overflow-y: auto;
+  background-color: var(--bg-surface);
+}
+
+.summary-canvas {
+  min-height: 100%;
+  outline: none;
+  font-size: 1rem;
+  line-height: 1.85;
+  color: var(--text-primary);
+}
+
+.summary-canvas[contenteditable="true"]:empty:before {
+  content: attr(data-placeholder);
+  color: var(--text-muted);
+  font-style: italic;
+  display: block;
+}
+
+/* بطاقات القوانين داخل المحرر */
+.summary-law-block {
+  margin: var(--space-md) 0;
+  padding: var(--space-md);
+  background-color: var(--bg-secondary);
+  border-right: 4px solid var(--accent-primary);
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+[dir="ltr"] .summary-law-block {
+  border-right: none;
+  border-left: 4px solid var(--accent-primary);
+}
+
+.summary-law-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.summary-law-formula {
+  font-family: var(--font-mono);
+  background-color: var(--bg-surface);
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-subtle);
+  font-size: 0.95rem;
+}
+
+/* الرسوم المدمجة بجانب القوانين */
+.embedded-concept-figure {
+  margin: var(--space-md) 0;
+  display: inline-flex;
+  flex-direction: column;
+  max-width: 480px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.embedded-concept-figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+.figure-caption {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  background-color: var(--bg-secondary);
+  border-top: 1px solid var(--border-subtle);
+}
+
+/* 4. استوديو الأساليب البصرية (15 أسلوباً) */
+.selected-concept-box {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-xs);
+}
+
+.concept-chip {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background-color: var(--accent-soft);
+  color: var(--accent-primary);
+  display: inline-block;
+  word-break: break-word;
+}
+
+.concept-chip.empty {
+  background-color: transparent;
+  color: var(--text-muted);
+  font-weight: 400;
+  font-size: 0.8rem;
+}
+
+.styles-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-xs);
+}
+
+.style-tag {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.styles-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-xs);
+  max-height: 330px;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.style-card {
+  background-color: var(--bg-surface);
+  border: 1.5px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.style-card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-1px);
+}
+
+.style-card.selected {
+  border-color: var(--accent-primary);
+  background-color: var(--accent-soft);
+  box-shadow: 0 0 0 1px var(--accent-primary);
+}
+
+.style-icon-preview {
+  width: 100%;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-tertiary);
+  margin-bottom: 2px;
+}
+
+/* تدرجات دافئة تعبر عن هوية كل أسلوب */
+.style-chalkboard { background: linear-gradient(135deg, #2D3A30, #1F2621); }
+.style-blueprint { background: linear-gradient(135deg, #2B4257, #1E2D3B); }
+.style-watercolor { background: linear-gradient(135deg, #E6D0BA, #E8C1A0); }
+.style-vintage { background: linear-gradient(135deg, #D4C3A3, #B8A27D); }
+.style-clay { background: linear-gradient(135deg, #E09A72, #D4794B); }
+.style-vector { background: linear-gradient(135deg, #7A9A60, #5C7A45); }
+.style-origami { background: linear-gradient(135deg, #EFE2CF, #DFCCA8); }
+.style-retromanual { background: linear-gradient(135deg, #C58958, #9E6436); }
+.style-mindmap { background: linear-gradient(135deg, #9FA8A3, #7E8782); }
+.style-pixel { background: linear-gradient(135deg, #4A5B6B, #303B45); }
+.style-papercut { background: linear-gradient(135deg, #EAD7C5, #D2B79E); }
+.style-lineart { background: linear-gradient(135deg, #F3ECE5, #E5D6C8); }
+.style-kawaii { background: linear-gradient(135deg, #ECC8AF, #DFAB8C); }
+.style-cinematic { background: linear-gradient(135deg, #433833, #231C18); }
+.style-hud { background: linear-gradient(135deg, #2D4038, #182620); }
+
+.style-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+
+.style-desc {
+  font-size: 0.68rem;
+  color: var(--text-secondary);
+  line-height: 1.25;
+}
+
+/* 5. منطقة معاينة الصور */
+.preview-area {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 220px;
+}
+
+.preview-placeholder {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.image-result-card {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.image-result-card img {
+  width: 100%;
+  max-height: 260px;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  background-color: var(--bg-tertiary);
+}
+
+.image-result-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+/* 6. النافذة المنبثقة (Modal) */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(43, 38, 35, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: var(--space-md);
+}
+
+.modal-dialog {
+  background-color: var(--bg-surface);
+  width: 100%;
+  max-width: 520px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-warm-lg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  padding: var(--space-md) var(--space-lg);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.btn-close-modal {
+  font-size: 1.5rem;
+  line-height: 1;
+  color: var(--text-secondary);
+}
+
+.modal-body {
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.modal-intro {
+  font-size: 0.84rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+}
+
+.input-password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.btn-toggle-eye {
+  position: absolute;
+  left: 10px;
+  background: none;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+[dir="ltr"] .btn-toggle-eye {
+  left: auto;
+  right: 10px;
+}
+
+.modal-tips {
+  background-color: var(--bg-secondary);
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.tip-badge {
+  font-weight: 700;
+  color: var(--accent-primary);
+}
+
+.modal-footer {
+  padding: var(--space-sm) var(--space-lg);
+  border-top: 1px solid var(--border-subtle);
+  background-color: var(--bg-secondary);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
